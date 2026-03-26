@@ -178,28 +178,28 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <div className="glass-card p-10 bg-slate-900 border-none shadow-2xl flex flex-col text-white">
-                    <h3 className="text-xl font-black italic tracking-tighter mb-8 text-blue-400 uppercase">Billing Analysis</h3>
+                <div className="glass-card p-10 bg-white border border-slate-100 shadow-2xl flex flex-col">
+                    <h3 className="text-xl font-black italic tracking-tighter mb-8 text-[#581c44] uppercase">Billing Analysis</h3>
                     <div className="space-y-6 flex-1 flex flex-col justify-center">
-                        <Link to="/add-gst-bill" className="p-6 bg-slate-800/50 rounded-3xl border border-slate-700/50 flex items-center justify-between group transition-all hover:bg-slate-800 cursor-pointer">
+                        <Link to="/add-gst-bill" className="p-6 bg-gradient-to-br from-blue-50 to-white rounded-3xl border border-blue-100 flex items-center justify-between group transition-all hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100 cursor-pointer">
                             <div className="flex items-center gap-5">
-                                <div className="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-600/30 group-hover:scale-110 transition-transform"><FileText size={24} /></div>
+                                <div className="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform text-white"><FileText size={24} /></div>
                                 <div>
-                                    <p className="text-lg font-black italic uppercase leading-none tracking-tight">GST Bills</p>
-                                    <p className="text-[10px] text-slate-500 font-bold tracking-widest mt-2">{stats.gstCount || 0} INVOICES</p>
+                                    <p className="text-lg font-black uppercase leading-none tracking-tight text-slate-800">GST Bills</p>
+                                    <p className="text-[10px] text-blue-600 font-black tracking-widest mt-2 uppercase">{stats.gstCount || 0} INVOICES</p>
                                 </div>
                             </div>
-                            <ArrowRight className="text-slate-600 group-hover:text-white transition-colors" />
+                            <ArrowRight className="text-blue-300 group-hover:text-blue-600 transition-colors" />
                         </Link>
-                        <Link to="/add-nongst-bill" className="p-6 bg-slate-800/50 rounded-3xl border border-slate-700/50 flex items-center justify-between group transition-all hover:bg-slate-800 cursor-pointer">
+                        <Link to="/add-nongst-bill" className="p-6 bg-gradient-to-br from-purple-50 to-white rounded-3xl border border-purple-100 flex items-center justify-between group transition-all hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100 cursor-pointer">
                             <div className="flex items-center gap-5">
-                                <div className="p-4 bg-purple-600 rounded-2xl shadow-xl shadow-purple-600/30 group-hover:scale-110 transition-transform"><Zap size={24} /></div>
+                                <div className="p-4 bg-purple-600 rounded-2xl shadow-xl shadow-purple-200 group-hover:scale-110 transition-transform text-white"><Zap size={24} /></div>
                                 <div>
-                                    <p className="text-lg font-black italic uppercase leading-none tracking-tight">Non-GST</p>
-                                    <p className="text-[10px] text-slate-500 font-bold tracking-widest mt-2">{stats.nonGstCount || 0} INVOICES</p>
+                                    <p className="text-lg font-black uppercase leading-none tracking-tight text-slate-800">Non-GST</p>
+                                    <p className="text-[10px] text-purple-600 font-black tracking-widest mt-2 uppercase">{stats.nonGstCount || 0} INVOICES</p>
                                 </div>
                             </div>
-                            <ArrowRight className="text-slate-600 group-hover:text-white transition-colors" />
+                            <ArrowRight className="text-purple-300 group-hover:text-purple-600 transition-colors" />
                         </Link>
                     </div>
                 </div>
