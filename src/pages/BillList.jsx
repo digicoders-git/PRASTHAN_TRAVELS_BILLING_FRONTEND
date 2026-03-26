@@ -63,7 +63,9 @@ const BillList = () => {
             link.click();
             link.remove();
         } catch (err) {
-            toast.error('PDF Fail');
+            console.error('PDF Download Error:', err);
+            const errMsg = err.response?.data?.message || 'Check Server Configuration';
+            toast.error(`PDF Fail: ${errMsg}`);
         }
     };
 

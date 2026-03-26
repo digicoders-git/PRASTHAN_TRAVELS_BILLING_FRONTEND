@@ -39,7 +39,14 @@ const ViewBill = () => {
             link.remove();
             toast.update(toastId, { render: 'Document generated successfully!', type: 'success', isLoading: false, autoClose: 2000 });
         } catch (err) {
-            toast.update(toastId, { render: 'Failed to generate PDF', type: 'error', isLoading: false, autoClose: 3000 });
+            console.error('PDF Download Error:', err);
+            const errMsg = err.response?.data?.message || 'Check Server Configuration';
+            toast.update(toastId, { 
+                render: `Failed to generate PDF: ${errMsg}`, 
+                type: 'error', 
+                isLoading: false, 
+                autoClose: 3000 
+            });
         }
     };
 
