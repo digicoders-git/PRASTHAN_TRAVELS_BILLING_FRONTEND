@@ -83,11 +83,16 @@ const ViewBill = () => {
                 <div className="lg:col-span-2 space-y-8">
                     <section className="glass-card p-8 bg-white border border-slate-100">
                         <div className="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
-                            <div className="flex items-center gap-2 text-blue-600 font-bold text-xl uppercase tracking-tighter">
-                                <Tally3 size={32} /> GSP BILLING
+                            <div className="flex flex-col items-start gap-1">
+                                <div className="flex items-center gap-2 text-[#581c44] font-bold text-xl uppercase tracking-tighter italic">
+                                    <Tally3 size={32} className="text-[#d4af37]" /> PRASTHAN TRAVELS
+                                </div>
+                                <div className="text-[10px] font-black uppercase text-[#6d4c41]/50 tracking-widest ml-1">
+                                    MOB: +91 7801898441, +91 90055 96777
+                                </div>
                             </div>
                             <div className="text-right">
-                                <h4 className="text-2xl font-black text-slate-800 uppercase italic mb-1">INVOICE</h4>
+                                <h4 className="text-2xl font-black text-[#581c44] uppercase italic mb-1">INVOICE</h4>
                                 <p className="text-slate-400 font-bold tracking-widest text-xs uppercase">No. {bill.billNo}</p>
                             </div>
                         </div>
