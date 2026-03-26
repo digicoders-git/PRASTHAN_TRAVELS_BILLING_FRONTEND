@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, User, Lock, FileText } from 'lucide-react';
+import { LogIn, User, Lock, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             await login(email, password);
             toast.success('Login Successful! Welcome to Prasthan Travels.');
             navigate('/');
         } catch (err) {
             toast.error(err.response?.data?.message || 'Login failed. Check details.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -48,6 +52,7 @@ const Login = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required 
+                            disabled={loading}
                         />
                     </div>
                     <div className="space-y-2">
@@ -61,10 +66,29 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required 
+                            disabled={loading}
                         />
                     </div>
-                    <button type="submit" className="w-full btn bg-blue-600 text-white p-4 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-blue-600/20 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all mt-4">
-                        <LogIn size={20} /> Authorize Access
+
+                    <button 
+                        type="submit" 
+                        disabled={loading}
+                        className={`w-full flex items-center justify-center gap-3 p-4 rounded-xl font-black uppercase tracking-widest transition-all mt-4 shadow-xl active:scale-95 ${
+                            loading 
+                            ? "bg-slate-800 text-slate-500 cursor-not-allowed" 
+                            : "bg-blue-600 text-white shadow-blue-600/20 hover:bg-blue-700 hover:scale-[1.02]"
+                        } btn`}
+                    >
+                        {loading ? (
+                            <>
+                                <Loader2 className="animate-spin text-blue-500" size={20} />
+                                <span className="text-slate-400">Authenticating...</span>
+                            </>
+                        ) : (
+                            <>
+                                <LogIn size={20} /> Authorize Access
+                            </>
+                        )}
                     </button>
                 </form>
 
