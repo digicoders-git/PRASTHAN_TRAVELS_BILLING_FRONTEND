@@ -82,9 +82,6 @@ const AddBill = ({ isGst }) => {
                         </p>
                     </div>
                 </div>
-                <button type="submit" form="bill-form" className="btn btn-primary" disabled={submitting}>
-                    {submitting ? 'Saving...' : <><Save size={18} /> Save & Generate</>}
-                </button>
             </div>
 
             <form id="bill-form" onSubmit={handleSubmit} className="space-y-8 pb-20">
@@ -160,10 +157,15 @@ const AddBill = ({ isGst }) => {
 
                     {/* Footer Summary */}
                     <div className="mt-8 pt-8 border-t border-slate-100 flex flex-col md:items-end">
-                        <div className="w-full md:w-80 space-y-4">
-                            <div className="flex justify-between text-slate-500">
-                                <span>Selected Items:</span>
-                                <span className="font-bold text-slate-800">{items.length}</span>
+                        <div className="w-full md:w-[420px] space-y-4">
+                            <div className="flex justify-between items-center text-slate-500">
+                                <div className="flex items-center gap-2">
+                                    <span>Selected Items:</span>
+                                    <span className="font-bold text-slate-800">{items.length}</span>
+                                </div>
+                                <button type="submit" form="bill-form" className="btn bg-[#581c44] text-white p-3 px-8 rounded-lg shadow-lg shadow-[#581c44]/10 hover:bg-[#3d142f] transition-all flex items-center gap-2 font-black uppercase tracking-widest text-[10px]" disabled={submitting}>
+                                    {submitting ? 'Saving...' : <><Save size={16} /> Save & Generate</>}
+                                </button>
                             </div>
                             <div className="text-xs italic text-blue-600 bg-blue-50/50 p-3 rounded-lg border border-blue-100 border-dashed flex items-start gap-2">
                                 <CheckCircle2 size={14} className="mt-0.5 shrink-0" />
