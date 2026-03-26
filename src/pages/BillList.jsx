@@ -97,11 +97,11 @@ const BillList = () => {
                 </select>
             </div>
 
-            <div className="bg-white rounded shadow overflow-hidden">
+            <div className="bg-white rounded shadow overflow-hidden overflow-x-auto">
                 {loading ? (
                     <div className="p-10 text-center">Loading...</div>
                 ) : (
-                    <table className="w-full text-left">
+                    <table className="w-full text-left min-w-[700px]">
                         <thead className="bg-[#1a0a14] uppercase text-[10px] font-black text-white tracking-[0.2em]">
                             <tr>
                                 <th className="p-5 border-b border-[#581c44]/30">Issue Date</th>

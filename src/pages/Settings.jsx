@@ -54,9 +54,9 @@ const Settings = () => {
 
     return (
         <Layout>
-             <div className="mb-10 pb-6 border-b border-[#e5dbcd]">
-                <h1 className="text-4xl font-extrabold text-[#581c44] tracking-tighter italic uppercase">Admin Controls</h1>
-                <p className="text-[#6d4c41]/60 font-medium uppercase text-[10px] tracking-[0.2em] mt-2 flex items-center gap-2">
+             <div className="mb-8 md:mb-10 pb-4 md:pb-6 border-b border-[#e5dbcd]">
+                <h1 className="text-2xl md:text-4xl font-extrabold text-[#581c44] tracking-tighter italic uppercase">Admin Controls</h1>
+                <p className="text-[#6d4c41]/60 font-medium uppercase text-[9px] md:text-[10px] tracking-[0.2em] mt-2 flex items-center gap-2">
                     <ShieldCheck size={14} className="text-[#d4af37]" /> Security and Account Preferences
                 </p>
             </div>
@@ -179,17 +179,17 @@ const Settings = () => {
             {/* Support Footer */}
             <div className="mt-12 glass-card p-10 bg-white border-none shadow-xl text-center">
                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#6d4c41]/30">Prasthan Billing Infrastructure v4.1</p>
-                 <div className="flex items-center justify-center gap-8 mt-6">
-                    <div className="flex items-center gap-2 text-[#581c44] font-black italic uppercase text-[10px]">
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mt-6">
+                    <div className="flex items-center gap-2 text-[#581c44] font-black italic uppercase text-[9px] md:text-[10px]">
                         <CheckCircle2 size={16} className="text-green-500" /> Database Stable
                     </div>
-                    <div className="flex items-center gap-2 text-[#581c44] font-black italic uppercase text-[10px]">
+                    <div className="flex items-center gap-2 text-[#581c44] font-black italic uppercase text-[9px] md:text-[10px]">
                         <CheckCircle2 size={16} className="text-green-500" /> SSL Encrypted
                     </div>
-                    <div className="flex items-center gap-2 text-[#581c44] font-black italic uppercase text-[10px]">
+                    <div className="flex items-center gap-2 text-[#581c44] font-black italic uppercase text-[9px] md:text-[10px]">
                         <CheckCircle2 size={16} className="text-green-500" /> Audit Log Active
                     </div>
-                 </div>
+                  </div>
             </div>
         </Layout>
     );

@@ -127,9 +127,10 @@ const AddBill = ({ isGst }) => {
                         </button>
                     </div>
 
-                    <div className="overflow-x-auto -mx-8 px-8">
-                        <div className="min-w-[800px] space-y-4">
-                            <div className={`grid ${isGstEnabled ? 'grid-cols-[2.5fr_1fr_0.8fr_1fr_0.8fr_40px]' : 'grid-cols-[3fr_1fr_0.8fr_1.2fr_40px]'} gap-4 px-2 text-xs font-black text-[#6d4c41]/30 uppercase tracking-[0.1em]`}>
+                    <div className="overflow-x-visible -mx-4 md:-mx-8 px-4 md:px-8">
+                        <div className="space-y-6 md:space-y-4">
+                            {/* Header - Desktop Only */}
+                            <div className={`hidden md:grid ${isGstEnabled ? 'grid-cols-[2.5fr_1fr_0.8fr_1fr_0.8fr_40px]' : 'grid-cols-[3fr_1fr_0.8fr_1.2fr_40px]'} gap-4 px-2 text-xs font-black text-[#6d4c41]/30 uppercase tracking-[0.1em]`}>
                                 <div>Description</div>
                                 <div>HSN CODE</div>
                                 <div>Qty</div>
@@ -139,17 +140,38 @@ const AddBill = ({ isGst }) => {
                             </div>
 
                              {items.map((item, index) => (
-                                <div key={index} className={`grid ${isGstEnabled ? 'grid-cols-[2.5fr_1fr_0.8fr_1fr_0.8fr_40px]' : 'grid-cols-[3fr_1fr_0.8fr_1.2fr_40px]'} gap-4 items-start group animation-slide-up bg-[#fcf8f1]/30 p-2 rounded-lg border border-transparent transition-all`}>
-                                    <input type="text" className="input-field bg-white" placeholder="Service/Product name" value={item.description} onChange={(e) => handleItemChange(index, 'description', e.target.value)} required />
-                                    <input type="text" className="input-field bg-white" placeholder="Optional" value={item.hsnCode} onChange={(e) => handleItemChange(index, 'hsnCode', e.target.value)} />
-                                    <input type="number" className="input-field bg-white text-center" value={item.qty} onChange={(e) => handleItemChange(index, 'qty', parseInt(e.target.value) || 0)} required />
-                                    <input type="number" className="input-field bg-white" value={item.rate} onChange={(e) => handleItemChange(index, 'rate', parseFloat(e.target.value) || 0)} required />
-                                    {isGstEnabled && (
-                                        <input type="number" className="input-field bg-white text-center" value={item.gstRate} onChange={(e) => handleItemChange(index, 'gstRate', parseFloat(e.target.value) || 0)} />
-                                    )}
-                                    <button type="button" onClick={() => removeItem(index)} className="p-2.5 text-[#6d4c41]/30 hover:text-[#8b0000] hover:bg-red-50 rounded-lg transition-all mt-1" disabled={items.length === 1}>
-                                        <Trash2 size={20} />
-                                    </button>
+                                <div key={index} className={`flex flex-col md:grid ${isGstEnabled ? 'md:grid-cols-[2.5fr_1fr_0.8fr_1fr_0.8fr_40px]' : 'md:grid-cols-[3fr_1fr_0.8fr_1.2fr_40px]'} gap-4 md:items-start group animation-slide-up bg-[#fcf8f1]/30 p-4 md:p-2 rounded-2xl md:rounded-lg border border-transparent md:hover:border-[#e5dbcd] transition-all`}>
+                                    <div className="space-y-1 md:space-y-0">
+                                        <label className="text-[10px] font-black uppercase text-[#6d4c41]/50 md:hidden">Description</label>
+                                        <input type="text" className="input-field bg-white" placeholder="Service/Product name" value={item.description} onChange={(e) => handleItemChange(index, 'description', e.target.value)} required />
+                                    </div>
+                                    <div className="grid grid-cols-2 md:block gap-4">
+                                        <div className="space-y-1 md:space-y-0 text-left">
+                                            <label className="text-[10px] font-black uppercase text-[#6d4c41]/50 md:hidden">HSN CODE</label>
+                                            <input type="text" className="input-field bg-white" placeholder="Optional" value={item.hsnCode} onChange={(e) => handleItemChange(index, 'hsnCode', e.target.value)} />
+                                        </div>
+                                        <div className="space-y-1 md:space-y-0 text-left">
+                                            <label className="text-[10px] font-black uppercase text-[#6d4c41]/50 md:hidden">Quantity</label>
+                                            <input type="number" className="input-field bg-white md:text-center" value={item.qty} onChange={(e) => handleItemChange(index, 'qty', parseInt(e.target.value) || 0)} required />
+                                        </div>
+                                    </div>
+                                    <div className={`grid ${isGstEnabled ? 'grid-cols-2' : 'grid-cols-1'} md:block gap-4`}>
+                                        <div className="space-y-1 md:space-y-0 text-left">
+                                            <label className="text-[10px] font-black uppercase text-[#6d4c41]/50 md:hidden">Rate (₹)</label>
+                                            <input type="number" className="input-field bg-white" value={item.rate} onChange={(e) => handleItemChange(index, 'rate', parseFloat(e.target.value) || 0)} required />
+                                        </div>
+                                        {isGstEnabled && (
+                                            <div className="space-y-1 md:space-y-0 text-left">
+                                                <label className="text-[10px] font-black uppercase text-[#6d4c41]/50 md:hidden">GST %</label>
+                                                <input type="number" className="input-field bg-white md:text-center" value={item.gstRate} onChange={(e) => handleItemChange(index, 'gstRate', parseFloat(e.target.value) || 0)} />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex justify-end md:block">
+                                        <button type="button" onClick={() => removeItem(index)} className="p-3 md:p-2.5 text-red-400 md:text-[#6d4c41]/30 hover:text-[#8b0000] hover:bg-red-50 rounded-xl md:rounded-lg transition-all md:mt-1 flex items-center gap-2 font-bold md:font-normal" disabled={items.length === 1}>
+                                            <Trash2 size={20} /> <span className="md:hidden text-xs uppercase">Delete Entry</span>
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>

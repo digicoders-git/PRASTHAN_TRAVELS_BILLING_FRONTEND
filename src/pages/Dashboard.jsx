@@ -80,19 +80,19 @@ const Dashboard = () => {
     return (
         <Layout>
             {/* Header Content */}
-            <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between items-start gap-4">
+            <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between items-start gap-4">
                 <div>
                      <div className="flex items-center gap-3 mb-2">
-                        <img src="/assets/logo.png" alt="Logo" className="h-12 w-auto object-contain lg:hidden mb-2" />
-                        <h1 className="text-4xl font-extrabold text-[#581c44] tracking-tight leading-none italic">Welcome Back, Admin</h1>
+                        <img src="/assets/logo.png" alt="Logo" className="h-10 w-auto object-contain lg:hidden" />
+                        <h1 className="text-2xl md:text-4xl font-extrabold text-[#581c44] tracking-tight leading-none italic">Welcome Back, Admin</h1>
                      </div>
-                    <p className="text-slate-500 font-bold flex items-center gap-2 uppercase text-xs tracking-widest">
+                    <p className="text-slate-500 font-bold flex items-center gap-2 uppercase text-[10px] md:text-xs tracking-widest">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
                         Prasthan Travels System is live
                     </p>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto">
-                    <Link to="/add-gst-bill" className="flex-1 md:flex-none btn bg-[#581c44] text-white shadow-xl shadow-[#581c44]/20 hover:bg-[#3d142f] hover:scale-105 active:scale-95 transition-all text-sm px-8 py-4 rounded-lg flex items-center justify-center gap-2 font-black uppercase tracking-tight">
+                    <Link to="/add-gst-bill" className="flex-1 md:flex-none btn bg-[#581c44] text-white shadow-xl shadow-[#581c44]/20 hover:bg-[#3d142f] hover:scale-105 active:scale-95 transition-all text-[11px] md:text-sm px-4 md:px-8 py-3 md:py-4 rounded-lg flex items-center justify-center gap-2 font-black uppercase tracking-tight">
                         <PlusCircle size={20} /> Create GST Invoice
                     </Link>
                 </div>

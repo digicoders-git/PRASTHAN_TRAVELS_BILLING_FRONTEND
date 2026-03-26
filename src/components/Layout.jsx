@@ -46,8 +46,17 @@ const Layout = ({ children }) => {
     return (
         <div className="flex h-screen bg-[#fcfbf9] transition-colors duration-500 overflow-hidden text-[#1a0a14]">
             {/* Sidebar Desktop (White & Classic) */}
+            {/* Sidebar Desktop (White & Classic) */}
             <aside className={`fixed inset-y-0 left-0 bg-white w-72 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0 transition-all duration-300 ease-in-out z-50 flex flex-col border-r border-slate-200`}>
-                <div className="p-6 flex flex-col items-center">
+                <div className="p-6 flex flex-col items-center relative">
+                    {/* Close button for mobile sidebar */}
+                    <button 
+                        onClick={() => setSidebarOpen(false)} 
+                        className="lg:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-900 transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
+                    
                     <img src="/assets/logo.png" alt="PRASTHAN" className="w-24 h-auto object-contain mb-3" />
                     <div className="h-px w-8 bg-[#d4af37] mb-1"></div>
                 </div>
@@ -104,8 +113,10 @@ const Layout = ({ children }) => {
                 )}
 
                 {/* Scrollable Area */}
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-14 scroll-smooth bg-[#fcfbf9]">
-                    {children}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 lg:p-14 scroll-smooth bg-[#fcfbf9]">
+                    <div className="max-w-7xl mx-auto w-full">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>
