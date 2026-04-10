@@ -1,21 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, 
-    FileText, 
-    PlusCircle, 
-    LogOut, 
-    Menu, 
-    X, 
-    User, 
-    ChevronRight,
+    FileCheck,
+    FileSpreadsheet,
+    Library,
     Users,
     BarChart3,
     Settings,
-    FileCheck,
-    FileSpreadsheet,
-    Library
+    LogOut, 
+    Menu, 
+    X
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
@@ -24,10 +20,19 @@ const Layout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [now, setNow] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const formatDate = (d) => d.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    const formatTime = (d) => d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
     const handleLogout = () => {
         logout();
-        toast.info('Logged out safely');
+        toast.info('Logged out');
         navigate('/login');
     };
 
@@ -44,76 +49,110 @@ const Layout = ({ children }) => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <div className="flex h-screen bg-[#fcfbf9] transition-colors duration-500 overflow-hidden text-[#1a0a14]">
-            {/* Sidebar Desktop (White & Classic) */}
-            {/* Sidebar Desktop (White & Classic) */}
-            <aside className={`fixed inset-y-0 left-0 bg-white w-72 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0 transition-all duration-300 ease-in-out z-50 flex flex-col border-r border-slate-200`}>
-                <div className="p-6 flex flex-col items-center relative">
-                    {/* Close button for mobile sidebar */}
-                    <button 
-                        onClick={() => setSidebarOpen(false)} 
-                        className="lg:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-900 transition-colors"
-                    >
-                        <X size={20} />
+        <div className="flex h-screen bg-[#f4f6fb] overflow-hidden text-[#1e2a4a]">
+
+            {/* Sidebar */}
+            <aside className={`fixed inset-y-0 left-0 bg-white w-60 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:inset-0 transition-all duration-300 z-50 flex flex-col border-r border-[#dde3f5]`}>
+                
+                {/* Logo Header */}
+                <div className="flex items-center gap-3 px-4 border-b border-[#dde3f5] h-16 shrink-0">
+                    <img src="/assets/logo.png" alt="Prasthan" className="w-11 h-11 object-contain" />
+                    <div>
+                        <p className="text-sm font-semibold text-[#465aa8] leading-tight">Prasthan Travels</p>
+                        <p className="text-xs text-gray-400">Billing System</p>
+                    </div>
+                    <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto text-gray-400 hover:text-gray-600">
+                        <X size={18} />
                     </button>
-                    
-                    <img src="/assets/logo.png" alt="PRASTHAN" className="w-24 h-auto object-contain mb-3" />
-                    <div className="h-px w-8 bg-[#d4af37] mb-1"></div>
                 </div>
 
-                <nav className="flex-1 px-4 mt-5 space-y-2 overflow-y-auto">
+                {/* Nav Links */}
+                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                     {links.map((link) => (
-                        <Link 
-                            key={link.name} 
+                        <Link
+                            key={link.name}
                             to={link.path}
                             onClick={() => setSidebarOpen(false)}
-                            className={`flex items-center gap-3 px-5 py-4 rounded-lg transition-all duration-200 group ${isActive(link.path) ? 'bg-[#581c44] text-[#d4af37] shadow-xl shadow-[#581c44]/20' : 'text-[#6d4c41]/70 hover:text-[#581c44] hover:bg-[#fcf8f1]'}`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
+                                isActive(link.path)
+                                    ? 'bg-[#465aa8] text-white'
+                                    : 'text-gray-500 hover:bg-[#f0f4ff] hover:text-[#465aa8]'
+                            }`}
                         >
-                            <link.icon size={18} className={`${isActive(link.path) ? 'text-white' : 'group-hover:scale-110 transition-transform'}`} />
-                            <span className="font-extrabold tracking-widest uppercase text-[10px]">{link.name}</span>
+                            <link.icon size={16} />
+                            {link.name}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="p-4 mt-auto border-t border-slate-100 bg-slate-50/20">
-                    <div className="flex items-center gap-3 px-2 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-[#fcf8f1] border border-[#d4af37]/30 flex items-center justify-center text-[#581c44] font-black text-lg shadow-sm shrink-0">
-                            {user?.name?.[0] || 'A'}
+                {/* User + Logout */}
+                <div className="px-3 py-3 border-t border-[#dde3f5]">
+                    <div className="flex items-center gap-2 px-2 py-2 mb-1">
+                        <div className="w-7 h-7 rounded-full bg-[#465aa8] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                            {user?.name?.[0]?.toUpperCase() || 'A'}
                         </div>
                         <div className="overflow-hidden">
-                            <p className="text-sm font-black text-slate-800 truncate leading-none uppercase italic">{user?.name}</p>
-                            <p className="text-[9px] text-slate-400 truncate uppercase font-bold tracking-widest mt-1.5">{user?.email}</p>
+                            <p className="text-xs font-semibold text-gray-800 truncate">{user?.name}</p>
+                            <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
                         </div>
                     </div>
-                    <button 
-                        onClick={handleLogout} 
-                        className="w-full flex items-center gap-3 px-4 py-2 text-[#6d4c41]/50 hover:text-[#8b0000] hover:bg-[#fdf2f2] rounded-lg transition-all font-bold tracking-wide group"
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-all"
                     >
-                        <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
-                        <span className="text-[11px] uppercase">Sign Out System</span>
+                        <LogOut size={15} />
+                        Sign Out
                     </button>
-                    <p className="text-[7px] text-[#6d4c41]/30 text-center mt-2 font-black tracking-widest uppercase italic">Prasthan ERP v4.1</p>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden relative">
-                {/* Header Mobile */}
-                <header className="lg:hidden h-20 bg-white border-b border-slate-100 flex items-center justify-between px-6 sticky top-0 z-40 transition-all shadow-sm">
-                    <button onClick={() => setSidebarOpen(true)} className="p-3 text-slate-500 hover:bg-slate-50 rounded-2xl transition-colors">
-                        <Menu size={24} />
-                    </button>
-                    <img src="/assets/logo.png" alt="Logo" className="h-10 w-auto object-contain" />
-                    <div className="w-10"></div>
+            <div className="flex-1 flex flex-col overflow-hidden">
+
+                {/* Top Header */}
+                <header className="bg-white border-b border-[#dde3f5] flex items-center justify-between px-5 h-16 shrink-0">
+                    {/* Left: hamburger (mobile) + page name (desktop) */}
+                    <div className="flex items-center gap-3">
+                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-1.5 text-gray-500 hover:bg-gray-50 rounded-md">
+                            <Menu size={18} />
+                        </button>
+                        <span className="text-sm font-semibold text-[#465aa8] hidden lg:block">
+                            {links.find(l => l.path === location.pathname)?.name || 'Dashboard'}
+                        </span>
+                        <img src="/assets/logo.png" alt="Logo" className="lg:hidden h-9 w-auto object-contain" />
+                    </div>
+
+                    {/* Right: date/time + admin info */}
+                    <div className="flex items-center gap-4">
+                        {/* Live Date & Time */}
+                        <div className="hidden md:flex flex-col items-end">
+                            <span className="text-xs font-medium text-[#465aa8]">{formatTime(now)}</span>
+                            <span className="text-[11px] text-gray-400">{formatDate(now)}</span>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="hidden md:block w-px h-8 bg-[#dde3f5]" />
+
+                        {/* Admin Avatar + Name */}
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-[#465aa8] text-white flex items-center justify-center text-sm font-bold shrink-0">
+                                {user?.name?.[0]?.toUpperCase() || 'A'}
+                            </div>
+                            <div className="hidden sm:block">
+                                <p className="text-xs font-semibold text-gray-800 leading-tight">{user?.name || 'Admin'}</p>
+                                <p className="text-[10px] text-gray-400">Administrator</p>
+                            </div>
+                        </div>
+                    </div>
                 </header>
 
                 {/* Mobile Backdrop */}
                 {sidebarOpen && (
-                    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300" onClick={() => setSidebarOpen(false)}></div>
+                    <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
                 )}
 
-                {/* Scrollable Area */}
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 lg:p-14 scroll-smooth bg-[#fcfbf9]">
+                {/* Page Content */}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8 bg-[#f4f6fb]">
                     <div className="max-w-7xl mx-auto w-full">
                         {children}
                     </div>

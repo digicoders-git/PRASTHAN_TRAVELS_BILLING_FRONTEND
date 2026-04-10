@@ -1,50 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import { 
-    FileText, 
-    PlusCircle, 
-    ArrowRight, 
-    Clock, 
-    CheckCircle, 
-    ArrowUpRight,
-    Users,
-    Zap,
-    DollarSign,
-    Target
-} from 'lucide-react';
+import { FileText, ArrowUpRight, Users, TrendingUp, Receipt, Zap } from 'lucide-react';
 import api from '../api/api';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { 
-    BarChart, 
-    Bar, 
-    XAxis, 
-    YAxis, 
-    CartesianGrid, 
-    Tooltip, 
-    ResponsiveContainer,
-    Cell
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+const StatCard = ({ label, value, icon: Icon, color }) => (
+    <div className="bg-white border border-[#dde3f5] rounded-lg p-4 flex items-center gap-4">
+        <div className={`p-2.5 rounded-md ${color}`}>
+            <Icon size={18} className="text-white" />
+        </div>
+        <div>
+            <p className="text-xs text-gray-500">{label}</p>
+            <p className="text-lg font-bold text-[#1e2a4a]">{value}</p>
+        </div>
+    </div>
+);
+
+const SkeletonCard = () => (
+    <div className="bg-white border border-[#dde3f5] rounded-lg p-4 flex items-center gap-4 animate-pulse">
+        <div className="w-10 h-10 bg-gray-100 rounded-md" />
+        <div className="space-y-2">
+            <div className="h-3 w-20 bg-gray-100 rounded" />
+            <div className="h-5 w-24 bg-gray-100 rounded" />
+        </div>
+    </div>
+);
 
 const Dashboard = () => {
-    const [stats, setStats] = useState({ 
-        count: 0, 
-        paid: 0, 
-        unpaid: 0, 
-        pending: 0, 
-        revenue: 0, 
-        tax: 0, 
-        gstCount: 0, 
-        nonGstCount: 0,
-        totalCustomers: 0,
-        todaySales: 0
-    });
+    const [stats, setStats] = useState(null);
     const [recentBills, setRecentBills] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
+        const fetchData = async () => {
             try {
                 const [statsRes, billsRes] = await Promise.all([
                     api.get('/bills/stats'),
@@ -52,202 +43,148 @@ const Dashboard = () => {
                 ]);
                 setStats(statsRes.data);
                 setRecentBills(Array.isArray(billsRes.data) ? billsRes.data.slice(0, 5) : []);
-            } catch (err) {
-                toast.error('Error fetching dashboard stats');
+            } catch {
+                toast.error('Error fetching dashboard data');
             } finally {
                 setLoading(false);
             }
         };
-        fetchDashboardData();
+        fetchData();
     }, []);
 
-    const COLORS = ['#2d5a27', '#8b0000', '#b45309']; // Success, Danger, Warning
     const barData = [
-        { name: 'Paid', value: stats.paid || 0 },
-        { name: 'Unpaid', value: stats.unpaid || 0 },
-        { name: 'Pending', value: stats.pending || 0 }
+        { name: 'Paid', value: stats?.paid || 0 },
+        { name: 'Unpaid', value: stats?.unpaid || 0 },
+        { name: 'Pending', value: stats?.pending || 0 },
     ];
-
-    if (loading) return (
-        <div className="flex h-screen items-center justify-center bg-slate-100">
-            <div className="flex flex-col items-center gap-4">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#581c44] border-t-2 border-[#e5dbcd]"></div>
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs animate-pulse">Syncing Prasthan Data...</p>
-            </div>
-        </div>
-    );
+    const BAR_COLORS = ['#38b45c', '#e53e3e', '#d97706'];
 
     return (
         <Layout>
-            {/* Header Content */}
-            <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between items-start gap-4">
-                <div>
-                     <div className="flex items-center gap-3 mb-2">
-                        <img src="/assets/logo.png" alt="Logo" className="h-10 w-auto object-contain lg:hidden" />
-                        <h1 className="text-2xl md:text-4xl font-extrabold text-[#581c44] tracking-tight leading-none italic">Welcome Back, Admin</h1>
-                     </div>
-                    <p className="text-slate-500 font-bold flex items-center gap-2 uppercase text-[10px] md:text-xs tracking-widest">
-                        <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-                        Prasthan Travels System is live
-                    </p>
-                </div>
-                <div className="flex gap-2 w-full md:w-auto">
-                    <Link to="/add-gst-bill" className="flex-1 md:flex-none btn bg-[#581c44] text-white shadow-xl shadow-[#581c44]/20 hover:bg-[#3d142f] hover:scale-105 active:scale-95 transition-all text-[11px] md:text-sm px-4 md:px-8 py-3 md:py-4 rounded-lg flex items-center justify-center gap-2 font-black uppercase tracking-tight">
-                        <PlusCircle size={20} /> Create GST Invoice
-                    </Link>
-                </div>
+            {/* Stat Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {loading ? (
+                    Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />)
+                ) : (
+                    <>
+                        <StatCard label="Total Revenue" value={`₹${(stats?.revenue || 0).toLocaleString()}`} icon={TrendingUp} color="bg-[#465aa8]" />
+                        <StatCard label="Today's Sales" value={`₹${(stats?.todaySales || 0).toLocaleString()}`} icon={Zap} color="bg-[#38b45c]" />
+                        <StatCard label="Customers" value={stats?.totalCustomers || 0} icon={Users} color="bg-[#465aa8]" />
+                        <StatCard label="Total Tax" value={`₹${(stats?.tax || 0).toLocaleString()}`} icon={Receipt} color="bg-[#38b45c]" />
+                    </>
+                )}
             </div>
 
-            {/* Summary Cards Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                <div className="group stats-card border-none bg-white p-6 shadow-xl shadow-slate-200/50 hover:shadow-blue-200/40 relative overflow-hidden transition-all duration-500">
-                    <div className="z-10 relative">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="p-3 bg-[#fcf8f1] border border-[#d4af37]/30 rounded-lg group-hover:bg-[#581c44] group-hover:text-white transition-all duration-500">
-                                <DollarSign size={24} />
-                            </div>
-                            <span className="text-[10px] bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-black uppercase tracking-tighter">TOTAL REVENUE</span>
-                        </div>
-                        <h2 className="text-3xl font-black text-slate-800 italic leading-none truncate">₹{(stats.revenue || 0).toLocaleString()}</h2>
-                    </div>
-                </div>
-
-                <div className="group stats-card border-none bg-white p-6 shadow-xl shadow-slate-200/50 hover:shadow-green-200/40 relative overflow-hidden transition-all duration-500">
-                    <div className="z-10 relative">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="p-3 bg-green-50 rounded-2xl group-hover:bg-green-600 group-hover:text-white transition-all duration-500">
-                                <Zap size={24} />
-                            </div>
-                            <span className="text-[10px] bg-green-50 text-green-700 px-3 py-1 rounded-full font-black uppercase tracking-tighter">TODAY SALES</span>
-                        </div>
-                        <h2 className="text-3xl font-black text-slate-800 italic leading-none truncate">₹{(stats.todaySales || 0).toLocaleString()}</h2>
-                    </div>
-                </div>
-
-                <div className="group stats-card border-none bg-white p-6 shadow-xl shadow-slate-200/50 hover:shadow-indigo-200/40 relative overflow-hidden transition-all duration-500">
-                    <div className="z-10 relative">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="p-3 bg-indigo-50 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
-                                <Users size={24} />
-                            </div>
-                            <span className="text-[10px] bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-black uppercase tracking-tighter">CUSTOMERS</span>
-                        </div>
-                        <h2 className="text-3xl font-black text-slate-800 italic leading-none truncate">{stats.totalCustomers || 0}</h2>
-                    </div>
-                </div>
-
-                <div className="group stats-card border-none bg-white p-6 shadow-xl shadow-slate-200/50 hover:shadow-orange-200/40 relative overflow-hidden transition-all duration-500">
-                    <div className="z-10 relative">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="p-3 bg-orange-50 rounded-2xl group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
-                                <Target size={24} />
-                            </div>
-                            <span className="text-[10px] bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-black uppercase tracking-tighter">TOTAL TAX</span>
-                        </div>
-                        <h2 className="text-3xl font-black text-slate-800 italic leading-none truncate">₹{(stats.tax || 0).toLocaleString()}</h2>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Visual Data */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12 items-stretch">
-                <div className="lg:col-span-2 glass-card p-10 bg-white shadow-2xl shadow-slate-200/40 flex flex-col">
-                    <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-xl font-black text-[#581c44] italic tracking-tighter uppercase">PAYMENT DISTRIBUTION</h3>
-                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            <FileText size={16} /> DATA SYNCED WITH PRASTHAN SERVERS
-                        </div>
-                    </div>
-                    <div className="flex-1 min-h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
+            {/* Chart + Bill Type */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                <div className="lg:col-span-2 bg-white border border-[#dde3f5] rounded-lg p-5">
+                    <h3 className="text-sm font-semibold text-[#465aa8] mb-4">Payment Distribution</h3>
+                    {loading ? (
+                        <div className="h-52 bg-gray-50 rounded animate-pulse" />
+                    ) : (
+                        <ResponsiveContainer width="100%" height={200}>
                             <BarChart data={barData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="5 5" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 'bold'}} />
-                                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 'bold'}} />
-                                <Tooltip 
-                                    cursor={{fill: '#f8fafc', radius: 10}} 
-                                    contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)', padding: '15px' }} 
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eef1fa" />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                <Tooltip
+                                    cursor={{ fill: '#f0f4ff' }}
+                                    contentStyle={{ borderRadius: '8px', border: '1px solid #dde3f5', fontSize: 12 }}
                                 />
-                                <Bar dataKey="value" radius={[10, 10, 0, 0]} barSize={60}>
-                                    {barData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
+                                <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={48}>
+                                    {barData.map((_, i) => <Cell key={i} fill={BAR_COLORS[i]} />)}
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
-                    </div>
+                    )}
                 </div>
 
-                <div className="glass-card p-10 bg-white border border-slate-100 shadow-2xl flex flex-col">
-                    <h3 className="text-xl font-black italic tracking-tighter mb-8 text-[#581c44] uppercase">Billing Analysis</h3>
-                    <div className="space-y-6 flex-1 flex flex-col justify-center">
-                        <Link to="/add-gst-bill" className="p-6 bg-gradient-to-br from-blue-50 to-white rounded-3xl border border-blue-100 flex items-center justify-between group transition-all hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100 cursor-pointer">
-                            <div className="flex items-center gap-5">
-                                <div className="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-200 group-hover:scale-110 transition-transform text-white"><FileText size={24} /></div>
-                                <div>
-                                    <p className="text-lg font-black uppercase leading-none tracking-tight text-slate-800">GST Bills</p>
-                                    <p className="text-[10px] text-blue-600 font-black tracking-widest mt-2 uppercase">{stats.gstCount || 0} INVOICES</p>
-                                </div>
+                <div className="bg-white border border-[#dde3f5] rounded-lg p-5 flex flex-col gap-3">
+                    <h3 className="text-sm font-semibold text-[#465aa8]">Bill Summary</h3>
+                    <Link to="/add-gst-bill" className="flex items-center justify-between p-3 rounded-md border border-[#dde3f5] bg-[#f0f4ff] hover:border-[#465aa8] transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-[#465aa8] rounded-md text-white"><FileText size={15} /></div>
+                            <div>
+                                <p className="text-sm font-semibold text-gray-800">GST Bills</p>
+                                <p className="text-xs text-[#465aa8]">{loading ? '...' : `${stats?.gstCount || 0} invoices`}</p>
                             </div>
-                            <ArrowRight className="text-blue-300 group-hover:text-blue-600 transition-colors" />
-                        </Link>
-                        <Link to="/add-nongst-bill" className="p-6 bg-gradient-to-br from-purple-50 to-white rounded-3xl border border-purple-100 flex items-center justify-between group transition-all hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100 cursor-pointer">
-                            <div className="flex items-center gap-5">
-                                <div className="p-4 bg-purple-600 rounded-2xl shadow-xl shadow-purple-200 group-hover:scale-110 transition-transform text-white"><Zap size={24} /></div>
-                                <div>
-                                    <p className="text-lg font-black uppercase leading-none tracking-tight text-slate-800">Non-GST</p>
-                                    <p className="text-[10px] text-purple-600 font-black tracking-widest mt-2 uppercase">{stats.nonGstCount || 0} INVOICES</p>
-                                </div>
+                        </div>
+                        <ArrowUpRight size={15} className="text-[#465aa8] opacity-50 group-hover:opacity-100" />
+                    </Link>
+                    <Link to="/add-nongst-bill" className="flex items-center justify-between p-3 rounded-md border border-[#dde3f5] bg-[#f0fff5] hover:border-[#38b45c] transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-[#38b45c] rounded-md text-white"><Zap size={15} /></div>
+                            <div>
+                                <p className="text-sm font-semibold text-gray-800">Non-GST Bills</p>
+                                <p className="text-xs text-[#38b45c]">{loading ? '...' : `${stats?.nonGstCount || 0} invoices`}</p>
                             </div>
-                            <ArrowRight className="text-purple-300 group-hover:text-purple-600 transition-colors" />
-                        </Link>
+                        </div>
+                        <ArrowUpRight size={15} className="text-[#38b45c] opacity-50 group-hover:opacity-100" />
+                    </Link>
+                    <div className="mt-auto pt-3 border-t border-[#dde3f5] grid grid-cols-3 gap-2 text-center">
+                        <div>
+                            <p className="text-xs text-gray-400">Total</p>
+                            <p className="text-sm font-bold text-gray-800">{loading ? '-' : stats?.count || 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-400">Paid</p>
+                            <p className="text-sm font-bold text-[#38b45c]">{loading ? '-' : stats?.paid || 0}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-400">Unpaid</p>
+                            <p className="text-sm font-bold text-red-500">{loading ? '-' : stats?.unpaid || 0}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Recent Table */}
-            <div className="glass-card overflow-hidden bg-white shadow-2xl shadow-slate-200/40">
-                <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-8 bg-blue-600 rounded-full"></div>
-                        <h3 className="text-xl font-black text-slate-800 italic tracking-tighter uppercase">Recent Invoices</h3>
-                    </div>
-                    <Link to="/bills" className="text-blue-600 text-xs font-black uppercase tracking-widest hover:underline flex items-center gap-2">
-                        View Full History <ArrowUpRight size={16} />
+            {/* Recent Bills Table */}
+            <div className="bg-white border border-[#dde3f5] rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-[#dde3f5]">
+                    <h3 className="text-sm font-semibold text-[#465aa8]">Recent Invoices</h3>
+                    <Link to="/bills" className="text-xs text-[#465aa8] hover:underline flex items-center gap-1">
+                        View all <ArrowUpRight size={13} />
                     </Link>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <th className="px-8 py-6">ID NUMBER</th>
-                                <th className="px-8 py-6">CLIENT ENTITY</th>
-                                <th className="px-8 py-6">ISSUE DATE</th>
-                                <th className="px-8 py-6 text-right">VALUATION</th>
-                                <th className="px-8 py-6 text-center">PAYMENT STATE</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-50">
-                            {recentBills.map((bill) => (
-                                <tr key={bill._id} className="hover:bg-slate-50/80 transition-all cursor-pointer group" onClick={() => navigate(`/view-bill/${bill._id}`)}>
-                                    <td className="px-8 py-6 font-black text-slate-800 italic">{bill.billNo}</td>
-                                    <td className="px-8 py-6 text-slate-500 font-bold tracking-tight uppercase text-xs">{bill.clientName}</td>
-                                    <td className="px-8 py-6 text-slate-400 font-bold text-xs">{bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : 'N/A'}</td>
-                                    <td className="px-8 py-6 text-right font-black text-slate-900 italic">₹{(bill.totalAmount || 0).toLocaleString()}</td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex justify-center">
-                                            <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border-2 ${
-                                                bill.status === 'Paid' ? 'border-green-50 bg-green-50 text-green-700' : 
-                                                bill.status === 'Unpaid' ? 'border-red-50 bg-red-50 text-red-700' : 'border-amber-50 bg-amber-50 text-amber-700'
-                                            }`}>
-                                                {bill.status}
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
+                    {loading ? (
+                        <div className="p-5 space-y-3">
+                            {Array(4).fill(0).map((_, i) => (
+                                <div key={i} className="h-8 bg-gray-50 rounded animate-pulse" />
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
+                    ) : recentBills.length === 0 ? (
+                        <p className="text-center text-sm text-gray-400 py-10">No bills found</p>
+                    ) : (
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="bg-[#f0f4ff] text-xs text-gray-500 border-b border-[#dde3f5]">
+                                    <th className="px-5 py-3 font-medium">Bill No.</th>
+                                    <th className="px-5 py-3 font-medium">Client</th>
+                                    <th className="px-5 py-3 font-medium">Date</th>
+                                    <th className="px-5 py-3 font-medium text-right">Amount</th>
+                                    <th className="px-5 py-3 font-medium text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#eef1fa]">
+                                {recentBills.map((bill) => (
+                                    <tr key={bill._id} className="hover:bg-[#f0f4ff] cursor-pointer transition-colors" onClick={() => navigate(`/view-bill/${bill._id}`)}>
+                                        <td className="px-5 py-3 font-medium text-gray-800">{bill.billNo}</td>
+                                        <td className="px-5 py-3 text-gray-600">{bill.clientName}</td>
+                                        <td className="px-5 py-3 text-gray-400 text-xs">{bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                        <td className="px-5 py-3 text-right font-semibold text-gray-800">₹{(bill.totalAmount || 0).toLocaleString()}</td>
+                                        <td className="px-5 py-3 text-center">
+                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-medium ${
+                                                bill.status === 'Paid' ? 'bg-green-50 text-[#38b45c]' :
+                                                bill.status === 'Unpaid' ? 'bg-red-50 text-red-500' :
+                                                'bg-amber-50 text-amber-600'
+                                            }`}>{bill.status}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
         </Layout>

@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import { 
-    Users, Search, UserCircle2, Phone, MapPin, 
-    Calendar, CreditCard, ChevronRight, Loader2,
-    Briefcase, Building2, TrendingUp, ArrowRight,
-    Star, ShieldCheck, Mail
-} from 'lucide-react';
+import { Search, MapPin, Loader2, Users, FileText } from 'lucide-react';
 import api from '../api/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -28,124 +23,90 @@ const Customers = () => {
         }
     };
 
-    useEffect(() => {
-        fetchCustomers();
-    }, []);
+    useEffect(() => { fetchCustomers(); }, []);
 
-    const filteredCustomers = customers.filter(c => 
+    const filteredCustomers = customers.filter(c =>
         c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (c.gstin && c.gstin.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
         <Layout>
-            {/* Premium Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                <div className="relative">
-                    <div className="absolute -left-4 top-0 w-1.5 h-full bg-[#d4af37] rounded-full shadow-[0_0_15px_rgba(212,175,55,0.4)]"></div>
-                    <h1 className="text-4xl font-extrabold text-[#581c44] tracking-tighter italic uppercase leading-none">
-                        Customer <span className="text-[#d4af37]">Intelligence</span>
-                    </h1>
-                    <p className="text-[#6d4c41]/60 font-bold uppercase text-[10px] tracking-[0.2em] mt-3 flex items-center gap-2">
-                        <ShieldCheck size={14} className="text-[#d4af37]" />
-                        Verified Partner Database v4.1
-                    </p>
-                </div>
-                
-                <div className="relative group w-full md:w-[450px]">
-                    <div className="absolute inset-0 bg-[#581c44]/5 rounded-xl blur-xl group-focus-within:bg-[#581c44]/10 transition-all"></div>
-                    <div className="relative flex items-center bg-white border border-[#e5dbcd] rounded-xl shadow-sm group-focus-within:border-[#d4af37] group-focus-within:shadow-lg group-focus-within:shadow-[#d4af37]/10 transition-all overflow-hidden">
-                        <Search className="ml-5 text-[#6d4c41]/40 group-focus-within:text-[#581c44] transition-colors" size={20} />
-                        <input 
-                            type="text" 
-                            placeholder="Find client by name or GSTIN..." 
-                            className="w-full p-5 pl-4 outline-none font-bold text-[#1a0a14] placeholder:text-[#6d4c41]/30 bg-transparent"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+            <div className="mb-5">
+                <div className="relative w-full max-w-sm">
+                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <input
+                        type="text"
+                        className="w-full border border-[#dde3f5] rounded-md text-sm pl-9 pr-4 py-2.5 outline-none focus:border-[#465aa8] bg-white text-gray-800 placeholder:text-gray-400 transition-colors"
+                        placeholder="Search by name or GSTIN..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center p-32">
-                    <div className="relative">
-                        <div className="w-20 h-20 border-4 border-[#fcf8f1] border-t-[#581c44] rounded-full animate-spin"></div>
-                        <Users className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#581c44]" size={24} />
-                    </div>
-                    <p className="text-[#6d4c41]/50 font-black uppercase tracking-[0.3em] text-[10px] mt-8 italic">Decrypting Database...</p>
+                <div className="flex items-center justify-center gap-2 py-20 text-gray-400 text-sm">
+                    <Loader2 size={18} className="animate-spin" /> Loading customers...
                 </div>
-            ) : filteredCustomers.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {filteredCustomers.map((customer) => (
-                        <div key={customer._id} className="group relative bg-white rounded-[2rem] border border-slate-50 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] overflow-hidden">
-                            {/* Accent Decoration */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-bl-[5rem] -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
-                            
-                            <div className="p-8 relative">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className="relative">
-                                        <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-black text-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500 shadow-xl shadow-slate-200">
-                                            {customer.name[0]}
-                                        </div>
-                                        <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-600 rounded-full border-4 border-white flex items-center justify-center">
-                                            <Star size={12} className="text-white fill-current" />
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <span className="inline-block px-3 py-1 bg-slate-50 rounded-full text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">Loyalty Score</span>
-                                        <div className="text-3xl font-black text-slate-800 italic uppercase">#{customer.totalBills}</div>
-                                    </div>
-                                </div>
-
-                                <div className="mb-6">
-                                    <h3 className="text-2xl font-black text-slate-800 italic uppercase tracking-tighter mb-1 truncate">{customer.name}</h3>
-                                    {customer.gstin ? (
-                                        <div className="flex items-center gap-1.5 text-blue-600 text-[10px] font-black uppercase tracking-widest">
-                                            <ShieldCheck size={14} /> Registered: {customer.gstin}
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-1.5 text-slate-300 text-[10px] font-black uppercase tracking-widest">
-                                            Unregistered Entity
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="space-y-4 pt-6 border-t border-slate-50 mb-8">
-                                    <div className="flex items-start gap-3">
-                                        <div className="p-2 bg-slate-50 rounded-lg text-slate-400"><MapPin size={14} /></div>
-                                        <p className="text-xs font-bold text-slate-500 leading-relaxed line-clamp-2">{customer.address || 'Address Protected'}</p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50">
-                                            <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Total Revenue</div>
-                                            <div className="text-sm font-black text-slate-800 tracking-tight">₹{customer.totalSpent.toLocaleString()}</div>
-                                        </div>
-                                        <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50">
-                                            <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Active Since</div>
-                                            <div className="text-sm font-black text-slate-800 tracking-tight">{new Date(customer.lastBillDate).getFullYear()}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button 
-                                    onClick={() => navigate(`/bills?search=${encodeURIComponent(customer.name)}`)}
-                                    className="w-full p-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 hover:bg-blue-600 transition-all group/btn"
-                                >
-                                    Billing History <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+            ) : filteredCustomers.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <Users size={36} className="text-gray-200 mb-3" />
+                    <p className="text-sm text-gray-400">No customers found.</p>
+                    <p className="text-xs text-gray-300 mt-1">Create an invoice to add customers.</p>
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center p-32 bg-white rounded-[3rem] border-2 border-dashed border-slate-100 shadow-sm">
-                    <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6">
-                        <Users size={48} />
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {filteredCustomers.map((customer) => (
+                            <div key={customer._id} className="bg-white border border-[#dde3f5] rounded-lg p-5 hover:border-[#465aa8] transition-colors">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-10 h-10 rounded-full bg-[#465aa8] text-white flex items-center justify-center text-sm font-bold shrink-0">
+                                        {customer.name[0]?.toUpperCase()}
+                                    </div>
+                                    <div className="overflow-hidden">
+                                        <p className="text-sm font-semibold text-gray-800 truncate">{customer.name}</p>
+                                        {customer.gstin ? (
+                                            <p className="text-xs text-[#465aa8] truncate">GSTIN: {customer.gstin}</p>
+                                        ) : (
+                                            <p className="text-xs text-gray-400">No GSTIN</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {customer.address && (
+                                    <div className="flex items-start gap-2 mb-4 text-xs text-gray-500">
+                                        <MapPin size={13} className="mt-0.5 shrink-0 text-gray-400" />
+                                        <span className="line-clamp-2">{customer.address}</span>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-3 gap-2 py-3 border-y border-[#eef1fa] mb-4">
+                                    <div className="text-center">
+                                        <p className="text-[11px] text-gray-400 mb-0.5">Bills</p>
+                                        <p className="text-sm font-bold text-gray-800">{customer.totalBills}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[11px] text-gray-400 mb-0.5">Revenue</p>
+                                        <p className="text-sm font-bold text-gray-800">₹{(customer.totalSpent || 0).toLocaleString()}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[11px] text-gray-400 mb-0.5">Since</p>
+                                        <p className="text-sm font-bold text-gray-800">{new Date(customer.lastBillDate).getFullYear()}</p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => navigate(`/bills?search=${encodeURIComponent(customer.name)}`)}
+                                    className="w-full flex items-center justify-center gap-1.5 text-xs font-medium text-[#465aa8] border border-[#dde3f5] hover:bg-[#f0f4ff] hover:border-[#465aa8] py-2 rounded-md transition-all"
+                                >
+                                    <FileText size={13} /> View Bills
+                                </button>
+                            </div>
+                        ))}
                     </div>
-                    <h2 className="text-2xl font-black text-slate-300 uppercase italic">No Partners Found</h2>
-                    <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-2">Create your first invoice to build your network.</p>
-                </div>
+                    <p className="text-xs text-gray-400 mt-4">{filteredCustomers.length} customer{filteredCustomers.length > 1 ? 's' : ''} found</p>
+                </>
             )}
         </Layout>
     );
